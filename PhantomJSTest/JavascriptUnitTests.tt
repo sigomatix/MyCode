@@ -1,0 +1,73 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#"  #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ assembly name="$(ProjectDir)..\ironjs-0.2-clr4-x86\IronJS.dll" #>
+
+<#
+        var ctx = new IronJS.Hosting.CSharp.Context();
+
+        ctx.CreatePrintFunction();
+		var files = System.IO.Directory.GetFiles(this.Host.ResolvePath("tests"),"*.js");
+		foreach(var file in files)
+		{
+			ctx.ExecuteFile(this.Host.ResolvePath(file));
+		}
+ 
+#>
+
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace TestProject1
+{
+    /// <summary>
+    /// Summary description for UnitTest1
+    /// </summary>
+    [TestClass]
+    public class JavascriptUnitTests
+    {
+
+		<#
+			/*   Assert[\s]*\.[\s]*(\w+)[\s]*\([\s]*(.*|\s*)[\s]*\)[\s]*; */
+			/* Assert.$1($2,"line","file"); */
+			var allMethods = ctx.Globals.Members.Where(m => m.Value is IronJS.FunctionObject && m.Key.StartsWith("Test")).Select(m=> m.Key);
+
+			foreach(var method in allMethods)
+			{
+				PushIndent("\t");
+				PushIndent("\t");
+				WriteLine("[TestMethod]");
+				WriteLine(String.Format("public void {0}()",method));
+				WriteLine("{");
+				PushIndent("\t");
+				WriteLine("var ctx = new IronJS.Hosting.CSharp.Context();");
+				WriteLine("Action<string> failAction = error => Assert.Fail(error + \" in \" + \"" + "AdditionTests.js" +"\");");
+				WriteLine("var failFunc = IronJS.Native.Utils.CreateFunction(ctx.Environment, 1, failAction);");
+				WriteLine("ctx.SetGlobal(\"FAIL\", failFunc);"); 
+				WriteLine("ctx.ExecuteFile(\"Assert.js\");");
+		        WriteLine("ctx.ExecuteFile(\"Math.js\");");
+				WriteLine("ctx.ExecuteFile(\"Dashboard.js\");");
+				foreach(var file in files)
+				{
+					WriteLine("ctx.ExecuteFile(@\""+file+"\");");
+				}
+				WriteLine(String.Format("ctx.Execute(\"{0}();\");", method));
+				PopIndent();
+				WriteLine("}");
+				WriteLine("");
+				PopIndent();
+				PopIndent();
+				
+			}
+		#>
+     
+    }
+}
+
+
+<#@ output extension=".cs" #>

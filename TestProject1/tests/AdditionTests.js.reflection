@@ -1,0 +1,18 @@
+function TestAddditionShouldAddPositives()
+{
+    Assert.AreEqual(3, MyMath.Addition(1, 2));
+}
+
+function TestAddditionShouldAddNegatives()
+{
+    Assert.AreEqual(-3, MyMath.Addition(-1, -2));
+}
+
+function TestAddditionShouldAddNegativesAndPositiv() {
+    Assert.AreEqual(-1, MyMath.Addition(1, -2));
+}
+for(var i in this)
+{
+if(typeof(this[i])=='function')console.log(i);
+}
+phantom.exit();
