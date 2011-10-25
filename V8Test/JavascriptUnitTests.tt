@@ -1,0 +1,64 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#"  #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\V8Test.dll"#>
+
+<#
+        var ctx = new V8Test.JSTestGenerator();
+		
+		ctx.SetTestFilesRelocationPath(@"tests");
+		ctx.AddIncludeFile(@"scripts\Math.js");
+		ctx.AddIncludeFile(@"scripts\Dashboard.js");
+		ctx.AddIncludeFile(@"Libs\Assert.js");
+		
+		var testFiles = System.IO.Directory.GetFiles(this.Host.ResolvePath("tests"),"*.js");
+		foreach(var file in testFiles)
+		{
+			ctx.AddTestFile(this.Host.ResolvePath(file));
+		}
+ 
+#>
+
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace TestProject1
+{
+    /// <summary>
+    /// Summary description for UnitTest1
+    /// </summary>
+    [TestClass]
+    public class JavascriptUnitTests
+    {
+
+		<#
+			var allMethods = ctx.GetAllTestMethods();
+
+			foreach(var method in allMethods)
+			{
+				PushIndent("\t");
+				PushIndent("\t");
+				WriteLine("[TestMethod]");
+				WriteLine(String.Format("public void {0}()",method));
+				WriteLine("{");
+				PushIndent("\t");
+				WriteLine(ctx.GenerateTestCodeForMethod(method));
+				PopIndent();
+				WriteLine("}");
+				WriteLine("");
+				PopIndent();
+				PopIndent();
+			}
+		#>
+     
+    }
+}
+
+
+<#@ output extension=".cs" #>
