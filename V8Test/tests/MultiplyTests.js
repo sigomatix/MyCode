@@ -1,13 +1,13 @@
-﻿function TestMultiplyShouldMultPositives()
+﻿TestMultiplyShouldMultPositives = function()
 {
     Assert.AreEqual(2, MyMath.Multiply(1, 2));
 }
 
-function TestMultiplyShouldMultNegatives()
+TestMultiplyShouldMultNegatives = function()
 {
     Assert.AreEqual(2, MyMath.Multiply(-1, -2));
 }
 
-function TestMultiplyShouldMultNegativesAndPositiv() {
+TestMultiplyShouldMultNegativesAndPositiv = function () {
     Assert.AreEqual(-2, MyMath.Multiply(1, -2));
 }

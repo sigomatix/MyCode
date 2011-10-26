@@ -1,4 +1,4 @@
-﻿function TestViewNewsArticleShouldOpenASmallDialogForPriceAlerts() {
+﻿TestViewNewsArticleShouldOpenASmallDialogForPriceAlerts = function () {
 
     /* Mock expected jquery calls */
     var headlineElement = {
@@ -28,7 +28,7 @@
 
 }
 
-function TestViewNewsArticleShouldOpenABigDialogForRegularNews() {
+TestViewNewsArticleShouldOpenABigDialogForRegularNews = function () {
 
     /* Mock expected jquery calls */
     var headlineElement = {
@@ -62,7 +62,7 @@ function TestViewNewsArticleShouldOpenABigDialogForRegularNews() {
 }
 
 
-function TestViewNewsArticleShouldPutCorrectStylesWhenOpeningAndClosingTheLightBox() {
+TestViewNewsArticleShouldPutCorrectStylesWhenOpeningAndClosingTheLightBox = function () {
 
     /* Mock expected jquery calls */
     var headlineElement = {

@@ -83,12 +83,12 @@ namespace V8Test
 
             /* TODO optimize to run only the test code that includes the test method */
             var expectedCode =
-@"var context = new Noesis.Javascript.JavascriptContext();
+@"var context = new IronJS.Hosting.CSharp.Context();
 {
-    context.Run(File.ReadAllText(@""libs\Assert.js""));
-    context.Run(@""__FILENAME__ = 'tests\AdditionTests.js';"");
-    context.Run(File.ReadAllText(@""tests\AdditionTests.js""));
-    context.Run(""TestAddditionShouldAddPositives();"");
+    context.Execute(File.ReadAllText(@""libs\Assert.js""));
+    context.Execute(@""__FILENAME__ = 'tests\AdditionTests.js';"".Replace(@""\"", @""\\""));
+    context.Execute(File.ReadAllText(@""tests\AdditionTests.js""));
+    context.Execute(""TestAddditionShouldAddPositives();"");
 }";
 
             var actualCode = jsTestGenerator.GenerateTestCodeForMethod("TestAddditionShouldAddPositives");

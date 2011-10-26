@@ -3,8 +3,8 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
-<#@ assembly name="$(ProjectDir)\Noesis.Javascript.dll"#>
-<#@ assembly name="$(ProjectDir)\Libs\V8Test.dll"#>
+<#@ assembly name="$(ProjectDir)..\ironjs-0.2-clr4-x86\IronJS.dll"#>
+<#@ assembly name="$(ProjectDir)Libs\V8Test.dll"#>
 
 <#
         var ctx = new V8Test.JSTestGenerator();

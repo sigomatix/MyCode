@@ -1,13 +1,13 @@
-﻿function TestAddditionShouldAddPositives()
+﻿TestAddditionShouldAddPositives = function()
 {
     Assert.AreEqual(3, MyMath.Addition(1, 2));
 }
 
-function TestAddditionShouldAddNegatives()
+TestAddditionShouldAddNegatives = function()
 {
     Assert.AreEqual(-3, MyMath.Addition(-1, -2));
 }
 
-function TestAddditionShouldAddNegativesAndPositiv() {
+TestAddditionShouldAddNegativesAndPositiv = function () {
     Assert.AreEqual(-1, MyMath.Addition(1, -2));
 }
