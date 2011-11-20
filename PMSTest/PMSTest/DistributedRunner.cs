@@ -24,17 +24,17 @@ namespace PMSTest
 
             var allTestMethods = from t in assembly.GetTypes()
                                  from m in t.GetMethods()
-                                 where m.GetCustomAttributes(typeof (TestMethodAttribute), true).Length == 1
+                                 where m.GetCustomAttributes(typeof(TestMethodAttribute), true).Length == 1
                                  select m;
 
             var testMethodsDistribution = new Dictionary<ITestRunner, IList<IMethodInfo>>();
-            foreach(var runner in testRunners)
+            foreach (var runner in testRunners)
             {
                 testMethodsDistribution.Add(runner, new List<IMethodInfo>());
             }
 
             var testMethodsDistributionEnum = testMethodsDistribution.GetEnumerator();
-            foreach(var testMethod in allTestMethods)
+            foreach (var testMethod in allTestMethods)
             {
                 KeyValuePair<ITestRunner, IList<IMethodInfo>> distribution;
 
@@ -52,12 +52,13 @@ namespace PMSTest
                 distribution.Value.Add(testMethod);
             }
 
-            var task = new Task( () =>
+            var task = new Task(() =>
                                      {
                                          foreach (var runner in testMethodsDistribution)
                                          {
                                              runner.Key.Run(runner.Value.ToArray());
                                          }
+
                                      });
             task.Start();
             return task;

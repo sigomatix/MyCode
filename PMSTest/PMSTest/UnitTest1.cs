@@ -58,33 +58,34 @@ namespace PMSTest
                     }
                     else
                     {
-                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[]{});
+                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[] { });
                     }
-                    m.Setup(n => n.ToString()).Returns("Method " + i);
+                    m.Setup(n => n.Name).Returns("Method " + i);
                     return m;
-                });
-            var testRunners = Enumerable.Range(1,3).Select(i=>  new Mock<ITestRunner>() );
+                }).ToList();
+            var testRunners = Enumerable.Range(1, 3).Select(i => new TestRunnerStub()).ToList();
 
             assemblyResolver.Setup(a => a.LoadFrom(@"c:\someAssembly.dll")).Returns(testAssembly.Object);
             testAssembly.Setup(t => t.GetTypes()).Returns(new IType[] { testClassType.Object });
-            testClassType.Setup(t => t.GetMethods()).Returns(methods.Select(m=>m.Object).ToArray());
+            testClassType.Setup(t => t.GetMethods()).Returns(methods.Select(m => m.Object).ToArray());
 
-            var runner = new DistributedRunner(testRunners.Select(t => t.Object), assemblyResolver.Object);
+            var runner = new DistributedRunner(testRunners, assemblyResolver.Object);
 
             var runTask = runner.Run(@"c:\someAssembly.dll");
             runTask.Wait();
 
-            var runnersList = testRunners.ToList();
-            var methodList = methods.ToList();
-            runnersList[0].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 3)), Times.Exactly(1));
-            runnersList[1].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 3)), Times.Exactly(1));
-            runnersList[2].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 2)), Times.Exactly(1));
-            runnersList[0].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[0].Object && p[1] == methodList[3].Object && p[2] == methodList[6].Object && p.Length == 3)), Times.Exactly(1));
-            runnersList[1].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[1].Object && p[1] == methodList[4].Object && p[2] == methodList[7].Object && p.Length == 3)), Times.Exactly(1));
-            runnersList[2].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[2].Object && p[1] == methodList[5].Object && p.Length == 2)), Times.Exactly(1));
+            Assert.IsTrue(new[] { 3, 2 }.Contains(testRunners[0].ExecutedMethods.Count()));
+            Assert.IsTrue(new[] { 3, 2 }.Contains(testRunners[1].ExecutedMethods.Count()));
+            Assert.IsTrue(new[] { 3, 2 }.Contains(testRunners[2].ExecutedMethods.Count()));
 
-            
+            Assert.AreEqual(7, testRunners.Sum(t => t.ExecutedMethods.Count()));
 
+            Enumerable.Range(1, 7).All(i =>
+            {
+                var found = testRunners.Any(t => t.ExecutedMethods.Contains("Method " + i));
+                Assert.IsTrue(found, "cant find runner for method " + i);
+                return found;
+            });
         }
     }
 }

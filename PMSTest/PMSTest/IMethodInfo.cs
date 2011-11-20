@@ -8,5 +8,6 @@ namespace PMSTest
     public interface IMethodInfo
     {
         object[] GetCustomAttributes(Type type, bool p);
+        string Name { get; }
     }
 }
