@@ -1,0 +1,76 @@
+﻿body
+{
+    background-color: #202020;
+}
+
+.TilesContainer
+{
+}
+
+.TilesColumn
+{
+    width:510px;
+    float:left;
+}
+
+.Tile
+{
+    width: 500px;
+    /*height: 200px;*/
+    /*float: left;*/
+    /*margin: 10px;*/
+    font-weight: bold;
+    padding: 5px;
+    /*border-width: 4px;
+    border-style: solid;*/
+    font-family: Arial;
+    /*background-image:url("Border.png");
+    background-repeat:repeat-y;
+    background-position:right;*/
+}
+
+.Tile a
+{
+    display: block;
+    width:480px;
+}
+
+.Tile a:link, .Tile a:visited
+{
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.Tile a:hover
+{
+    text-shadow: 2px 2px 2px #000;
+}
+
+
+
+.Tile a:nth-child(even)
+{
+    color: Black;
+}
+
+.Tile a:nth-child(odd)
+{
+    color: White;
+}
+
+
+.Tile .Links
+{
+    /*overflow: auto;*/
+    /*height: 170px;*/
+}
+
+.Tile .LinksGroupTitle
+{
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    text-transform: uppercase;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}

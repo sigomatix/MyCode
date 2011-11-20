@@ -1,0 +1,5 @@
+D:\perso\prog\MyCode\TileMarks.Tests\bin\Debug\TileMarks.Tests.dll
+D:\perso\prog\MyCode\TileMarks.Tests\bin\Debug\TileMarks.Tests.pdb
+D:\perso\prog\MyCode\TileMarks.Tests\obj\Debug\ResolveAssemblyReference.cache
+D:\perso\prog\MyCode\TileMarks.Tests\obj\Debug\TileMarks.Tests.dll
+D:\perso\prog\MyCode\TileMarks.Tests\obj\Debug\TileMarks.Tests.pdb
