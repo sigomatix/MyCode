@@ -1,4 +1,2 @@
-*.obj
-*.dll
-*.exe
-*.pdb
+*/bin/*
+*/obj/*
