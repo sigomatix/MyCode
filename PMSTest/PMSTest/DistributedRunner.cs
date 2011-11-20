@@ -36,7 +36,7 @@ namespace PMSTest
             var testMethodsDistributionEnum = testMethodsDistribution.GetEnumerator();
             foreach(var testMethod in allTestMethods)
             {
-                IList<IMethodInfo> distribution;
+                KeyValuePair<ITestRunner, IList<IMethodInfo>> distribution;
 
                 if (testMethodsDistributionEnum.MoveNext())
                 {
@@ -44,17 +44,20 @@ namespace PMSTest
                 }
                 else
                 {
-                    testMethodsDistributionEnum.Reset();
+                    testMethodsDistributionEnum = testMethodsDistribution.GetEnumerator();
                     testMethodsDistributionEnum.MoveNext();
                     distribution = testMethodsDistributionEnum.Current;
                 }
 
-                distribution.Add(testMethod);
+                distribution.Value.Add(testMethod);
             }
 
             var task = new Task( () =>
                                      {
-                                         foreach()
+                                         foreach (var runner in testMethodsDistribution)
+                                         {
+                                             runner.Key.Run(runner.Value.ToArray());
+                                         }
                                      });
             task.Start();
             return task;

@@ -54,8 +54,13 @@ namespace PMSTest
                     var m = new Mock<IMethodInfo>();
                     if (i < 8)
                     {
-                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), false)).Returns(new Object[] { new Object() });
+                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[] { new Object() });
                     }
+                    else
+                    {
+                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[]{});
+                    }
+                    m.Setup(n => n.ToString()).Returns("Method " + i);
                     return m;
                 });
             var testRunners = Enumerable.Range(1,3).Select(i=>  new Mock<ITestRunner>() );
@@ -71,9 +76,14 @@ namespace PMSTest
 
             var runnersList = testRunners.ToList();
             var methodList = methods.ToList();
+            runnersList[0].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 3)), Times.Exactly(1));
+            runnersList[1].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 3)), Times.Exactly(1));
+            runnersList[2].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p.Length == 2)), Times.Exactly(1));
             runnersList[0].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[0].Object && p[1] == methodList[3].Object && p[2] == methodList[6].Object && p.Length == 3)), Times.Exactly(1));
             runnersList[1].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[1].Object && p[1] == methodList[4].Object && p[2] == methodList[7].Object && p.Length == 3)), Times.Exactly(1));
             runnersList[2].Verify(r => r.Run(It.Is<IMethodInfo[]>(p => p[0] == methodList[2].Object && p[1] == methodList[5].Object && p.Length == 2)), Times.Exactly(1));
+
+            
 
         }
     }
