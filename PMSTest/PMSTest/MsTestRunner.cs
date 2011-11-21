@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PMSTest
 {
@@ -18,7 +19,16 @@ namespace PMSTest
 
         public Task Run(IMethodInfo[] methodInfo)
         {
-            return Task.Factory.StartNew(() => { proxy.Run("SomeTestClass", "SomeTestMethod"); });
+            return Task.Factory.StartNew(() => 
+            {
+                foreach (var method in methodInfo)
+                {
+                    if (method.GetCustomAttributes(typeof(TestMethodAttribute), true).Length > 0)
+                    {
+                        proxy.Run(method.DeclaringType.FullName, method.Name);
+                    }
+                }
+            });
         }
     }
 }
