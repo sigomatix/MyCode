@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PMSTest
 {
@@ -9,10 +10,9 @@ namespace PMSTest
     {
         public IList<string> ExecutedMethods { get; private set; }
 
-        public object Run(IMethodInfo[] methodInfo)
+        public Task Run(IMethodInfo[] methodInfo)
         {
-            ExecutedMethods = methodInfo.Select(m => m.Name).ToList();
-            return null;
+            return Task.Factory.StartNew( () => ExecutedMethods = methodInfo.Select(m => m.Name).ToList());
         }
     }
 }

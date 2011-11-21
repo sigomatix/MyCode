@@ -52,16 +52,9 @@ namespace PMSTest
                 distribution.Value.Add(testMethod);
             }
 
-            var task = new Task(() =>
-                                     {
-                                         foreach (var runner in testMethodsDistribution)
-                                         {
-                                             runner.Key.Run(runner.Value.ToArray());
-                                         }
-
-                                     });
-            task.Start();
-            return task;
+            var allRunnersTasks = testMethodsDistribution.Select(r=>r.Key.Run(r.Value.ToArray()));
+            
+            return Task.Factory.StartNew( () => Task.WaitAll(allRunnersTasks.ToArray()));
         }
     }
 }
