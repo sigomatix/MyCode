@@ -9,40 +9,20 @@ using PMSTest.Proxy;
 using System.Runtime.InteropServices;
 using Moq;
 
+/*
+ * 
+ * DistributedRunner distribute test methods on runners -> TestRunner schedule methods for running in proxy (including init/cleanup) -> Proxy in AppDomain execute the given methods
+ * 
+ * */
+
 namespace PMSTest
 {
-
-
-
-
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
     public class UnitTest1
     {
-        //[TestMethod]
-        //public void WhenDistributedOn4RunnersItShouldRunOnceTheAssemblyInitializeOnEachRunner()
-        //{
-        //    var assemblyResolver = new Mock<IAssemblyResolver>();
-        //    var testAssembly = new Mock<Assembly>();
-        //    var testClassType = new Mock<Type>();
-        //    var assemblyInitialize = new Mock<MethodInfo>();
-
-        //    assemblyResolver.Setup(a => a.LoadFrom(@"c:\someAssembly.dll")).Returns(testAssembly.Object);
-        //    testAssembly.Setup(t => t.GetTypes()).Returns(new Type[] { testClassType.Object });
-        //    testClassType.Setup(t => t.GetMethods()).Returns(new MethodInfo[] { assemblyInitialize.Object });
-        //    assemblyInitialize.Setup(a => a.IsStatic).Returns(true);
-        //    assemblyInitialize.Setup(a => a.GetCustomAttributes(typeof(AssemblyInitializeAttribute), false)).Returns(new Object[] { new Object() });
-        //    assemblyInitialize.Verify(a=>a.Invoke(It.IsAny<object>(), It.IsAny<object[]>()),Times.Exactly(4));
-
-        //    var runner = new DistributedRunner(4, assemblyResolver.Object);
-
-        //    var runTask = runner.Run(@"c:\someAssembly.dll");
-        //    runTask.Wait();
-
-        //}
-
         [TestMethod]
         public void ItShouldDistributeTheTestMethodsTestsEquallyAmongstTheRunners()
         {
@@ -86,6 +66,27 @@ namespace PMSTest
                 Assert.IsTrue(found, "cant find runner for method " + i);
                 return found;
             });
+        }
+
+        [TestMethod]
+        public void GivenThereIsOnlyOneTestMethodTheRunnerShouldRunnerATaskForExecutingThisOneTestMethod()
+        {
+            var proxyMock = new Mock<IProxy>();
+            var runner = new MsTestRunner(proxyMock.Object);
+
+            var declaringType = new Mock<IType>();
+            declaringType.Setup(t => t.FullName).Returns("SomeTestClass");
+
+            var testmethodMock = new Mock<IMethodInfo>();
+            testmethodMock.Setup(m => m.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new object[] { new object() });
+            testmethodMock.Setup(m => m.DeclaringType).Returns(declaringType.Object);
+            testmethodMock.Setup(m => m.Name).Returns("SomeTestMethod");
+            var methods = new IMethodInfo[] { testmethodMock.Object };
+
+            runner.Run(methods).Wait();
+
+            proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod"), Times.Once());
+
         }
     }
 }

@@ -9,5 +9,6 @@ namespace PMSTest
     {
         object[] GetCustomAttributes(Type type, bool p);
         string Name { get; }
+        IType DeclaringType { get; }
     }
 }
