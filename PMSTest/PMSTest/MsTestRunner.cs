@@ -19,14 +19,21 @@ namespace PMSTest
 
         public Task Run(IMethodInfo[] methodInfo)
         {
-            return Task.Factory.StartNew(() => 
+            return Task.Factory.StartNew(() =>
             {
+                var assemblyInit = (from t in methodInfo.First().DeclaringType.Assembly.GetTypes()
+                                   from m in t.GetMethods()
+                                   where m.GetCustomAttributes(typeof(AssemblyInitializeAttribute), true).Length > 0
+                                   select m).FirstOrDefault();
+
+                if (assemblyInit != null)
+                {
+                    proxy.Run(assemblyInit.DeclaringType.FullName, assemblyInit.Name);
+                }
+
                 foreach (var method in methodInfo)
                 {
-                    if (method.GetCustomAttributes(typeof(TestMethodAttribute), true).Length > 0)
-                    {
-                        proxy.Run(method.DeclaringType.FullName, method.Name);
-                    }
+                    proxy.Run(method.DeclaringType.FullName, method.Name);
                 }
             });
         }

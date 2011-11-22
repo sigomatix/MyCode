@@ -10,5 +10,7 @@ namespace PMSTest
     {
         IMethodInfo[] GetMethods();
         string FullName { get; }
+
+        IAssembly Assembly { get; }
     }
 }
