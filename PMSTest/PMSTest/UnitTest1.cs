@@ -119,8 +119,8 @@ namespace PMSTest
         [TestMethod]
         public void ItShouldRunTheAsemblyInitialiseOnceAndBeforeEverythingElseIfPresent()
         {
-            var proxyMock = new Mock<IProxy>();
-            var runner = new MsTestRunner(proxyMock.Object);
+            var proxy = new ProxyStub();
+            var runner = new MsTestRunner(proxy);
 
             var dt = BuildDeclaringType("SomeTestClass");
             var assemblyInit = BuildMethod(dt.Object, "AssemblyInit", typeof(AssemblyInitializeAttribute));
@@ -139,14 +139,14 @@ namespace PMSTest
 
             runner.Run(methods).Wait();
 
-            proxyMock.Verify(p => p.Run("SomeTestClass", "AssemblyInit"), Times.Once());
-            proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod1"), Times.Once());
-            proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod2"), Times.Once());
-            proxyMock.Verify(p => p.Run(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(3));
+            Assert.AreEqual(3, proxy.Log.Count);
+            Assert.IsTrue(proxy.Log[0].Type == "SomeTestClass" && proxy.Log[0].Method == "AssemblyInit");
+            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod1");
+            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod2");
         }
 
         [TestMethod]
-        public void ItShouldForTheAssemblyInitInTheWholeAssemblyAndNotJustInASpecificTestClass()
+        public void ItShouldLookForTheAssemblyInitInTheWholeAssemblyAndNotJustInASpecificTestClass()
         {
             var proxyMock = new Mock<IProxy>();
             var runner = new MsTestRunner(proxyMock.Object);
