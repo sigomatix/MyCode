@@ -14,6 +14,8 @@ function View() {
 	    });
     }
 
+    init();
+
     return {
 	    setController:setController
     }
@@ -65,47 +67,47 @@ function View() {
 
 }
 
-function makeEvent(name) {
-	return function(){
-		if(typeof(arguments[0]) === "function"){
-			this[name+"Listener"] = arguments[0];
-		}
-		else if(this[name+"Listener"] === "function"){
-			this[name+"Listener"].apply(this, arguments);
-		}
-	}
+function Event(name) {
+    return function(){
+        if(typeof(arguments[0]) === "function"){
+            this[name+"Listener"] = arguments[0];
+        }
+        else if(typeof(this[name+"Listener"]) === "function"){
+            this[name+"Listener"].apply(this, arguments);
+        }
+    }
 }
 
 function View() {
-	var export;
+    var exp;
 
-	function init() {
-		$(".theLink").click(function () {
-			export.onLinkClicked($(this).attr("id"));
-		});
-	}
+    function init() {
+        $(".theLink").click(function (e) {
+            exp.onLinkClicked($(this).attr("id"));
+        });
+    }
+    
+    init();
 
-	export = {
-		onLinkClicked:makeEvent("onLinkClicked")
-	}
+    exp = {
+        onLinkClicked:Event("onLinkClicked")
+    }
 
-	return export;
+    return exp;
 }
 
 function Controller(options) {
-    var onLinkClickedListener;
-
-    function onLinkClicked(listener) {
-        onLinkClickedListener = listener;
-    }
+    var exp;
 
     options.view.onLinkClicked(function (id) {
-        onLinkClickedListener(id);
+        exp.onLinkClicked(id);
     });
 
-    return {
-        onLinkClicked: onLinkClicked // This will be called by the view
+    exp = {
+        onLinkClicked:Event("onLinkClicked")
     }
+
+    return exp;
 }
 
 function Mediator(options) {
