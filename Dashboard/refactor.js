@@ -5,64 +5,91 @@ function View() {
     var controller;
 
     function setController(newController) {
-        controller = newController;
+	    controller = newController;
     }
 
     function init() {
-        $(".theLink").click(function () {
-            controller.onLinkClicked($(this).attr("id"));
-        });
+	    $(".theLink").click(function () {
+		    controller.onLinkClicked($(this).attr("id"));
+	    });
     }
 
     return {
-        setController:setController
+	    setController:setController
     }
 
 }
 
 function Controller(options) {
 
-    function onLinkClicked(id) {
-        options.onLinkClicked(id); // This will notify the nediator
-    }
+	function onLinkClicked(id) {
+		options.onLinkClicked(id); // This will notify the nediator
+	}
 
-    return {
-        onLinkClicked: onLinkClicked // This will be called by the view
-    }
+	return {
+		onLinkClicked: onLinkClicked // This will be called by the view
+	}
 }
 
 function Mediator(options) {
 
-    var view = new options.viewConstructor();
-    var otherController = new options.otherControllerConstructor();
-    var controller = new options.controllerConstructor({
-        onLinkClicked: function (id) {
-            otherController.onLinkClicked(id);
-        }
-    });
-    view.setController(controller);
+	var view = new options.viewConstructor();
+	var otherController = new options.otherControllerConstructor();
+	var controller = new options.controllerConstructor({
+		onLinkClicked: function (id) {
+				       otherController.onLinkClicked(id);
+			       }
+	});
+	view.setController(controller);
 }
 
 
 ////////
 
 function View() {
-    var onLinkClickedListener;
+	var onLinkClickedListener;
 
-    function onLinkClicked(listener) {
-        onLinkClickedListener = listener;
-    }
+	function onLinkClicked(listener) {
+		onLinkClickedListener = listener;
+	}
 
-    function init() {
-        $(".theLink").click(function () {
-            onLinkClickedListener($(this).attr("id"));
-        });
-    }
+	function init() {
+		$(".theLink").click(function () {
+			onLinkClickedListener($(this).attr("id"));
+		});
+	}
 
-    return {
-        onLinkClicked: onLinkClicked
-    }
+	return {
+		onLinkClicked: onLinkClicked
+	}
 
+}
+
+function makeEvent(name) {
+	return function(){
+		if(typeof(arguments[0]) === "function"){
+			this[name+"Listener"] = arguments[0];
+		}
+		else if(this[name+"Listener"] === "function"){
+			this[name+"Listener"].apply(this, arguments);
+		}
+	}
+}
+
+function View() {
+	var export;
+
+	function init() {
+		$(".theLink").click(function () {
+			export.onLinkClicked($(this).attr("id"));
+		});
+	}
+
+	export = {
+		onLinkClicked:makeEvent("onLinkClicked")
+	}
+
+	return export;
 }
 
 function Controller(options) {
