@@ -9,23 +9,18 @@ namespace PMSTest
 {
     class DistributedRunner
     {
-        private IAssemblyResolver assemblyResolver;
         private IEnumerable<ITestRunner> testRunners;
+        private ITestMethodExtractor testMethodExtractor;
 
-        public DistributedRunner(IEnumerable<ITestRunner> testRunners, IAssemblyResolver assemblyResolver)
+        public DistributedRunner(IEnumerable<ITestRunner> testRunners, ITestMethodExtractor testMethodExtractor)
         {
             this.testRunners = testRunners;
-            this.assemblyResolver = assemblyResolver;
+            this.testMethodExtractor = testMethodExtractor;
         }
 
-        public Task Run(string testAssemblyPath)
+        public Task Run()
         {
-            var assembly = assemblyResolver.LoadFrom(testAssemblyPath);
-
-            var allTestMethods = from t in assembly.GetTypes()
-                                 from m in t.GetMethods()
-                                 where m.GetCustomAttributes(typeof(TestMethodAttribute), true).Length == 1
-                                 select m;
+            var allTestMethods = testMethodExtractor.GetTestMethods();
 
             var testMethodsDistribution = new Dictionary<ITestRunner, IList<IMethodInfo>>();
             foreach (var runner in testRunners)

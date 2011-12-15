@@ -8,6 +8,7 @@ using System.IO;
 using PMSTest.Proxy;
 using System.Runtime.InteropServices;
 using Moq;
+using System.Linq.Expressions;
 
 /*
  * 
@@ -26,32 +27,14 @@ namespace PMSTest
         [TestMethod]
         public void ItShouldDistributeTheTestMethodsTestsEquallyAmongstTheRunners()
         {
-            var assemblyResolver = new Mock<IAssemblyResolver>();
-            var testAssembly = new Mock<IAssembly>();
-            var testClassType = new Mock<IType>();
-            var methods = Enumerable.Range(1, 20).Select(i =>
-                {
-                    var m = new Mock<IMethodInfo>();
-                    if (i < 8)
-                    {
-                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[] { new Object() });
-                    }
-                    else
-                    {
-                        m.Setup(a => a.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new Object[] { });
-                    }
-                    m.Setup(n => n.Name).Returns("Method " + i);
-                    return m;
-                }).ToList();
+            var testMethodExtractor = new Mock<ITestMethodExtractor>();
+            var methods = Enumerable.Range(1, 7).Select(i => BuildMethod("SomClass", "Method " + i).Object ).ToList();
             var testRunners = Enumerable.Range(1, 3).Select(i => new TestRunnerStub()).ToList();
 
-            assemblyResolver.Setup(a => a.LoadFrom(@"c:\someAssembly.dll")).Returns(testAssembly.Object);
-            testAssembly.Setup(t => t.GetTypes()).Returns(new IType[] { testClassType.Object });
-            testClassType.Setup(t => t.GetMethods()).Returns(methods.Select(m => m.Object).ToArray());
+            testMethodExtractor.Setup(e => e.GetTestMethods()).Returns(methods);
+            var runner = new DistributedRunner(testRunners, testMethodExtractor.Object);
 
-            var runner = new DistributedRunner(testRunners, assemblyResolver.Object);
-
-            var runTask = runner.Run(@"c:\someAssembly.dll");
+            var runTask = runner.Run();
             runTask.Wait();
 
             Assert.IsTrue(new[] { 3, 2 }.Contains(testRunners[0].ExecutedMethods.Count()));
@@ -69,36 +52,31 @@ namespace PMSTest
         }
 
         [TestMethod]
-        public void GivenThereIsOnlyOneTestMethodTheRunnerShouldRunnerATaskForExecutingThisOneTestMethod()
+        public void GivenThereIsOnlyOneTestMethodTheRunnerShouldRunATaskForExecutingThisOneTestMethodThroughtItsProxy()
         {
             var proxyMock = new Mock<IProxy>();
-            var runner = new MsTestRunner(proxyMock.Object);
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxyMock.Object, extractor.Object);
 
-            var declaringType = new Mock<IType>();
-            declaringType.Setup(t => t.FullName).Returns("SomeTestClass");
-
-            var testmethodMock = new Mock<IMethodInfo>();
-            testmethodMock.Setup(m => m.GetCustomAttributes(typeof(TestMethodAttribute), true)).Returns(new object[] { new object() });
-            testmethodMock.Setup(m => m.DeclaringType).Returns(declaringType.Object);
-            testmethodMock.Setup(m => m.Name).Returns("SomeTestMethod");
+            var testmethodMock = BuildMethod("SomeTestClass", "SomeTestMethod");
             var methods = new IMethodInfo[] { testmethodMock.Object };
+
+            extractor.Setup(e => e.GetTestMethods()).Returns(methods);
 
             runner.Run(methods).Wait();
 
             proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod"), Times.Once());
-
         }
 
         [TestMethod]
-        public void GivenThereAreTwotMethodsTheRunnerShouldRunnerATaskForExecutingTheseTwoTestMethod()
+        public void GivenThereAreTwotMethodsTheRunnerShouldRunnerATaskForExecutingTheseTwoTestMethodThroughtItsProxy()
         {
             var proxyMock = new Mock<IProxy>();
-            var runner = new MsTestRunner(proxyMock.Object);
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxyMock.Object, extractor.Object);
 
-            var dt = BuildDeclaringType("SomeTestClass");
-
-            var testmethodMock1 = BuildMethod(dt.Object, "SomeTestMethod1", typeof(TestMethodAttribute));
-            var testmethodMock2 = BuildMethod(dt.Object, "SomeTestMethod2", typeof(TestMethodAttribute));
+            var testmethodMock1 = BuildMethod("SomeTestClass", "SomeTestMethod1");
+            var testmethodMock2 = BuildMethod("SomeTestClass", "SomeTestMethod2");
 
             var methods = new IMethodInfo[] { testmethodMock1.Object, testmethodMock2.Object };
 
@@ -109,79 +87,61 @@ namespace PMSTest
             proxyMock.Verify(p => p.Run(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
-        private static Mock<IType> BuildDeclaringType(string className)
-        {
-            var declaringType = new Mock<IType>();
-            declaringType.Setup(t => t.FullName).Returns(className);
-            return declaringType;
-        }
-
         [TestMethod]
         public void ItShouldRunTheAsemblyInitialiseOnceAndBeforeEverythingElseIfPresent()
         {
             var proxy = new ProxyStub();
-            var runner = new MsTestRunner(proxy);
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxy, extractor.Object);
 
-            var dt = BuildDeclaringType("SomeTestClass");
-            var assemblyInit = BuildMethod(dt.Object, "AssemblyInit", typeof(AssemblyInitializeAttribute));
-            var testmethodMock1 = BuildMethod(dt.Object, "SomeTestMethod1", typeof(TestMethodAttribute));
-            var testmethodMock2 = BuildMethod(dt.Object, "SomeTestMethod2", typeof(TestMethodAttribute));
-
-            var declaringType = Mock.Get(testmethodMock1.Object.DeclaringType);
-            declaringType.Setup(t => t.GetMethods()).Returns(new IMethodInfo[] { assemblyInit.Object, testmethodMock1.Object, testmethodMock2.Object });
-            var assemblyTypes = new IType[] { declaringType.Object };
-            var assembly = new Mock<IAssembly>();
-            assembly.Setup(a => a.GetTypes()).Returns(assemblyTypes);
-
-            declaringType.Setup(t => t.Assembly).Returns(assembly.Object);
+            var assemblyInit = BuildMethod("SomeTestClass", "AssemblyInit");
+            var testmethodMock1 = BuildMethod("SomeTestClass", "SomeTestMethod1");
+            var testmethodMock2 = BuildMethod("SomeTestClass", "SomeTestMethod2");
 
             var methods = new IMethodInfo[] { testmethodMock1.Object, testmethodMock2.Object };
+
+            extractor.Setup(e => e.GetTestMethods()).Returns(methods);
+            extractor.Setup(e => e.GetAssemblyInitialise()).Returns(assemblyInit.Object);
 
             runner.Run(methods).Wait();
 
             Assert.AreEqual(3, proxy.Log.Count);
             Assert.IsTrue(proxy.Log[0].Type == "SomeTestClass" && proxy.Log[0].Method == "AssemblyInit");
-            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod1");
-            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod2");
+            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[1].Method == "SomeTestMethod1");
+            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[2].Method == "SomeTestMethod2");
         }
 
         [TestMethod]
-        public void ItShouldLookForTheAssemblyInitInTheWholeAssemblyAndNotJustInASpecificTestClass()
+        public void ItShouldRunTheAsemblyCleanupOnceAndAfterEverythingElseIfPresent()
         {
-            var proxyMock = new Mock<IProxy>();
-            var runner = new MsTestRunner(proxyMock.Object);
+            var proxy = new ProxyStub();
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxy, extractor.Object);
 
-            var assemblyInitDeclaringType = BuildDeclaringType("OtherClass");
-            var testMethodsDeclaringType = BuildDeclaringType("SomeTestClass");
-            var assemblyInit = BuildMethod(assemblyInitDeclaringType.Object, "AssemblyInit", typeof(AssemblyInitializeAttribute));
-            var testmethodMock1 = BuildMethod(testMethodsDeclaringType.Object, "SomeTestMethod1", typeof(TestMethodAttribute));
-            var testmethodMock2 = BuildMethod(testMethodsDeclaringType.Object, "SomeTestMethod2", typeof(TestMethodAttribute));
+            var assemblyCleanup = BuildMethod("SomeTestClass", "AssemblyCleanup");
+            var testmethodMock1 = BuildMethod("SomeTestClass", "SomeTestMethod1");
+            var testmethodMock2 = BuildMethod("SomeTestClass", "SomeTestMethod2");
 
-            assemblyInitDeclaringType.Setup(a => a.GetMethods()).Returns(new[] { assemblyInit.Object });
-            testMethodsDeclaringType.Setup(a => a.GetMethods()).Returns(new[] { testmethodMock1.Object, testmethodMock2.Object });
-
-            var assembly = new Mock<IAssembly>();
-            assembly.Setup(a => a.GetTypes()).Returns(new IType[] { assemblyInitDeclaringType.Object, testMethodsDeclaringType.Object });
-
-            testMethodsDeclaringType.Setup(t => t.Assembly).Returns(assembly.Object);
-            assemblyInitDeclaringType.Setup(t => t.Assembly).Returns(assembly.Object);
-            
             var methods = new IMethodInfo[] { testmethodMock1.Object, testmethodMock2.Object };
+
+            extractor.Setup(e => e.GetTestMethods()).Returns(methods);
+            extractor.Setup(e => e.GetAssemblyCleanup()).Returns(assemblyCleanup.Object);
 
             runner.Run(methods).Wait();
 
-            proxyMock.Verify(p => p.Run("OtherClass", "AssemblyInit"), Times.Once());
-            proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod1"), Times.Once());
-            proxyMock.Verify(p => p.Run("SomeTestClass", "SomeTestMethod2"), Times.Once());
-            proxyMock.Verify(p => p.Run(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(3));
+            Assert.AreEqual(3, proxy.Log.Count);
+            Assert.IsTrue(proxy.Log[0].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod1");
+            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[1].Method == "SomeTestMethod2");
+            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[2].Method == "AssemblyCleanup");
         }
 
-        private static Mock<IMethodInfo> BuildMethod(IType declaringType, string methodName, Type methodAttribute)
+        private static Mock<IMethodInfo> BuildMethod(string className, string methodName)
         {
             var testmethodMock = new Mock<IMethodInfo>();
-            testmethodMock.Setup(m => m.GetCustomAttributes(methodAttribute, true)).Returns(new object[] { new object() });
-            testmethodMock.Setup(m => m.DeclaringType).Returns(declaringType);
+            var dt = new Mock<IType>();
             testmethodMock.Setup(m => m.Name).Returns(methodName);
+            testmethodMock.Setup(m => m.DeclaringType).Returns(dt.Object);
+            dt.Setup(t => t.FullName).Returns(className);
             return testmethodMock;
         }
     }

@@ -11,20 +11,20 @@ namespace PMSTest
     public class MsTestRunner : ITestRunner
     {
         private IProxy proxy;
+        private ITestMethodExtractor testMethodExtractor;
 
-        public MsTestRunner(IProxy proxy)
+        public MsTestRunner(IProxy proxy, ITestMethodExtractor testMethodExtractor)
         {
             this.proxy = proxy;
+            this.testMethodExtractor = testMethodExtractor;
         }
 
         public Task Run(IMethodInfo[] methodInfo)
         {
             return Task.Factory.StartNew(() =>
             {
-                var assemblyInit = (from t in methodInfo.First().DeclaringType.Assembly.GetTypes()
-                                   from m in t.GetMethods()
-                                   where m.GetCustomAttributes(typeof(AssemblyInitializeAttribute), true).Length > 0
-                                   select m).FirstOrDefault();
+                IMethodInfo assemblyInit = testMethodExtractor.GetAssemblyInitialise();
+                IMethodInfo assemblyCleanup = testMethodExtractor.GetAssemblyCleanup();
 
                 if (assemblyInit != null)
                 {
@@ -34,6 +34,11 @@ namespace PMSTest
                 foreach (var method in methodInfo)
                 {
                     proxy.Run(method.DeclaringType.FullName, method.Name);
+                }
+
+                if (assemblyCleanup != null)
+                {
+                    proxy.Run(assemblyCleanup.DeclaringType.FullName, assemblyCleanup.Name);
                 }
             });
         }
