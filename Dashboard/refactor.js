@@ -33,8 +33,18 @@ function Controller(options) {
 	}
 }
 
-function Mediator(options) {
+function OtherController(options) {
 
+	function onLinkClicked(id) {
+		alert("I will do something with " + id);
+	}
+
+	return {
+		onLinkClicked: onLinkClicked // This will be called by the view
+	}
+}
+
+function Mediator(options) {
 	var view = new options.viewConstructor();
 	var otherController = new options.otherControllerConstructor();
 	var controller = new options.controllerConstructor({
@@ -47,78 +57,71 @@ function Mediator(options) {
 
 
 ////////
+function Event() {
+    var listener;
 
-function View() {
-	var onLinkClickedListener;
-
-	function onLinkClicked(listener) {
-		onLinkClickedListener = listener;
-	}
-
-	function init() {
-		$(".theLink").click(function () {
-			onLinkClickedListener($(this).attr("id"));
-		});
-	}
-
-	return {
-		onLinkClicked: onLinkClicked
-	}
-
-}
-
-function Event(name) {
     return function(){
         if(typeof(arguments[0]) === "function"){
-            this[name+"Listener"] = arguments[0];
+            listener = arguments[0];
         }
-        else if(typeof(this[name+"Listener"]) === "function"){
-            this[name+"Listener"].apply(this, arguments);
+        else if(typeof(listener) === "function"){
+            listener.apply(this, arguments);
         }
     }
 }
 
 function View() {
-    var exp;
+    var onLinkClicked = Event();
 
     function init() {
-        $(".theLink").click(function (e) {
-            exp.onLinkClicked($(this).attr("id"));
-        });
+	$(".theLink").click(function (e) {
+	    onLinkClicked($(this).attr("id"));
+	});
     }
     
     init();
 
-    exp = {
-        onLinkClicked:Event("onLinkClicked")
+    return {
+        onLinkClicked:onLinkClicked
     }
-
-    return exp;
 }
 
+
+
+
+
+
 function Controller(options) {
-    var exp;
+	var onLinkClicked=Event();
 
-    options.view.onLinkClicked(function (id) {
-        exp.onLinkClicked(id);
-    });
+	options.view.onLinkClicked(function (id) {
+		onLinkClicked(id);
+	});
 
-    exp = {
-        onLinkClicked:Event("onLinkClicked")
+    return {
+        onLinkClicked:onLinkClicked
     }
+}
 
-    return exp;
+function OtherController(options) {
+	var onLinkClicked=Event();
+
+	onLinkClicked(function(id) {
+		alert("I will do something with " + id);
+	});
+
+	return {
+		onLinkClicked: onLinkClicked 
+	}
 }
 
 function Mediator(options) {
-
     var view = new options.viewConstructor();
     var otherController = new options.otherControllerConstructor();
     var controller = new options.controllerConstructor({ view: view });
-
     controller.onLinkClicked(function (id) {
         otherController.onLinkClicked(id);
     });
-
 }
+
 

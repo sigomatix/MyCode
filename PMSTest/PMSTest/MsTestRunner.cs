@@ -23,8 +23,8 @@ namespace PMSTest
         {
             return Task.Factory.StartNew(() =>
             {
-                IMethodInfo assemblyInit = testMethodExtractor.GetAssemblyInitialise();
-                IMethodInfo assemblyCleanup = testMethodExtractor.GetAssemblyCleanup();
+                var assemblyInit = testMethodExtractor.GetAssemblyInitialise();
+                var assemblyCleanup = testMethodExtractor.GetAssemblyCleanup();
 
                 if (assemblyInit != null)
                 {
@@ -33,7 +33,20 @@ namespace PMSTest
 
                 foreach (var method in methodInfo)
                 {
+                    var testInitialize = testMethodExtractor.GetTestInitialize(method);
+                    var testCleanup = testMethodExtractor.GetTestCleanup(method);
+
+                    if (testInitialize != null)
+                    {
+                        proxy.Run(testInitialize.DeclaringType.FullName, testInitialize.Name);
+                    }
+
                     proxy.Run(method.DeclaringType.FullName, method.Name);
+
+                    if (testCleanup != null)
+                    {
+                        proxy.Run(testCleanup.DeclaringType.FullName, testCleanup.Name);
+                    }
                 }
 
                 if (assemblyCleanup != null)

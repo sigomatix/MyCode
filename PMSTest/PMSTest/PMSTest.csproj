@@ -53,6 +53,7 @@
     <Compile Include="IAssemblyResolver.cs" />
     <Compile Include="IMethodInfo.cs" />
     <Compile Include="IProxy.cs" />
+    <Compile Include="ITestMethodExtractor.cs" />
     <Compile Include="ITestRunner.cs" />
     <Compile Include="IType.cs" />
     <Compile Include="MsTestRunner.cs" />

@@ -135,6 +135,58 @@ namespace PMSTest
             Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[2].Method == "AssemblyCleanup");
         }
 
+        [TestMethod]
+        public void ItShouldRunTestInitializeOfTheTestClassBeforeEachTestMethodOfTheTestClass()
+        {
+            var proxy = new ProxyStub();
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxy, extractor.Object);
+
+            var testInitialize = BuildMethod("SomeTestClass", "TestInitialize");
+            var testmethodMock1 = BuildMethod("SomeTestClass", "SomeTestMethod1");
+            var testmethodMock2 = BuildMethod("SomeTestClass", "SomeTestMethod2");
+
+            var methods = new IMethodInfo[] { testmethodMock1.Object, testmethodMock2.Object };
+
+            extractor.Setup(e => e.GetTestMethods()).Returns(methods);
+            extractor.Setup(e => e.GetTestInitialize(testmethodMock1.Object)).Returns(testInitialize.Object);
+            extractor.Setup(e => e.GetTestInitialize(testmethodMock2.Object)).Returns(testInitialize.Object);
+
+            runner.Run(methods).Wait();
+
+            Assert.AreEqual(4, proxy.Log.Count);
+            Assert.IsTrue(proxy.Log[0].Type == "SomeTestClass" && proxy.Log[0].Method == "TestInitialize");
+            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[1].Method == "SomeTestMethod1");
+            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[2].Method == "TestInitialize");
+            Assert.IsTrue(proxy.Log[3].Type == "SomeTestClass" && proxy.Log[3].Method == "SomeTestMethod2");
+        }
+
+        [TestMethod]
+        public void ItShouldRunTestCleanupOfTheTestClassAfterEachTestMethodOfTheTestClass()
+        {
+            var proxy = new ProxyStub();
+            var extractor = new Mock<ITestMethodExtractor>();
+            var runner = new MsTestRunner(proxy, extractor.Object);
+
+            var testCleanup = BuildMethod("SomeTestClass", "TestCleanup");
+            var testmethodMock1 = BuildMethod("SomeTestClass", "SomeTestMethod1");
+            var testmethodMock2 = BuildMethod("SomeTestClass", "SomeTestMethod2");
+
+            var methods = new IMethodInfo[] { testmethodMock1.Object, testmethodMock2.Object };
+
+            extractor.Setup(e => e.GetTestMethods()).Returns(methods);
+            extractor.Setup(e => e.GetTestCleanup(testmethodMock1.Object)).Returns(testCleanup.Object);
+            extractor.Setup(e => e.GetTestCleanup(testmethodMock2.Object)).Returns(testCleanup.Object);
+
+            runner.Run(methods).Wait();
+
+            Assert.AreEqual(4, proxy.Log.Count);
+            Assert.IsTrue(proxy.Log[0].Type == "SomeTestClass" && proxy.Log[0].Method == "SomeTestMethod1");
+            Assert.IsTrue(proxy.Log[1].Type == "SomeTestClass" && proxy.Log[1].Method == "TestCleanup");
+            Assert.IsTrue(proxy.Log[2].Type == "SomeTestClass" && proxy.Log[2].Method == "SomeTestMethod2");
+            Assert.IsTrue(proxy.Log[3].Type == "SomeTestClass" && proxy.Log[3].Method == "TestCleanup");
+        }
+
         private static Mock<IMethodInfo> BuildMethod(string className, string methodName)
         {
             var testmethodMock = new Mock<IMethodInfo>();

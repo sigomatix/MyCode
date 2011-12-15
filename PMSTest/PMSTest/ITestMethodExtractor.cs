@@ -11,5 +11,7 @@ namespace PMSTest
 
         IMethodInfo GetAssemblyInitialise();
         IMethodInfo GetAssemblyCleanup();
+        IMethodInfo GetTestInitialize(IMethodInfo methodInfo);
+        IMethodInfo GetTestCleanup(IMethodInfo methodInfo);
     }
 }
