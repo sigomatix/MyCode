@@ -196,5 +196,88 @@ namespace PMSTest
             dt.Setup(t => t.FullName).Returns(className);
             return testmethodMock;
         }
+
+        [TestMethod]
+        public void ShouldGetAssemblyInitialiseWhenPresent()
+        {
+            var assembly = new Mock<IAssembly>();
+            var searcher = new Mock<IAssemblySearcher>();
+            var expectedInit = BuildMethod("SomeClass", "Init");
+
+            searcher.Setup(s=>s.FindMethod(assembly.Object, typeof(AssemblyInitializeAttribute))).Returns(expectedInit.Object);
+
+            var extractor = new MSTestExtractor(assembly.Object, searcher.Object);
+
+            var actualInit = extractor.GetAssemblyInitialise();
+
+            Assert.AreEqual(expectedInit.Object, actualInit);
+        }
+
+        [TestMethod]
+        public void ShouldReturnNullWhenAssemnlyInitializeIsNotPresent()
+        {
+            var assembly = new Mock<IAssembly>();
+            var searcher = new Mock<IAssemblySearcher>();
+            IMethodInfo expected = null;
+
+            searcher.Setup(s => s.FindMethod(assembly.Object, typeof(AssemblyInitializeAttribute))).Returns(expected);
+
+            var extractor = new MSTestExtractor(assembly.Object, searcher.Object);
+
+            var actualInit = extractor.GetAssemblyInitialise();
+
+            Assert.AreEqual(expected, actualInit);
+        }
+
+        [TestMethod]
+        public void ShouldGetAssemblyCleanupWhenPresent()
+        {
+            var assembly = new Mock<IAssembly>();
+            var searcher = new Mock<IAssemblySearcher>();
+            var expectedCleanup = BuildMethod("SomeClass", "Cleanup");
+
+            searcher.Setup(s => s.FindMethod(assembly.Object, typeof(AssemblyCleanupAttribute))).Returns(expectedCleanup.Object);
+
+            var extractor = new MSTestExtractor(assembly.Object, searcher.Object);
+
+            var actualCleanup = extractor.GetAssemblyCleanup();
+
+            Assert.AreEqual(expectedCleanup.Object, actualCleanup);
+        }
+
+        [TestMethod]
+        public void ShouldReturnNullWhenAssemnlyCleanupIsNotPresent()
+        {
+            var assembly = new Mock<IAssembly>();
+            var searcher = new Mock<IAssemblySearcher>();
+            IMethodInfo expected = null;
+
+            searcher.Setup(s => s.FindMethod(assembly.Object, typeof(AssemblyCleanupAttribute))).Returns(expected);
+
+            var extractor = new MSTestExtractor(assembly.Object, searcher.Object);
+
+            var actualInit = extractor.GetAssemblyInitialise();
+
+            Assert.AreEqual(expected, actualInit);
+        }
+
+        [TestMethod]
+        public void ShouldGetMethodTestInitializeWhenPresent()
+        {
+            var assembly = new Mock<IAssembly>();
+            var testMethodOwningType = new Mock<IType>();
+            var searcher = new Mock<IAssemblySearcher>();
+            var expectedInit = BuildMethod("SomeClass", "Init");
+            var testMethod = BuildMethod("SomeClass", "Test");
+            testMethod.Setup(m => m.DeclaringType).Returns(testMethodOwningType.Object);
+
+            searcher.Setup(s => s.FindMethod(testMethodOwningType.Object, typeof(TestInitializeAttribute))).Returns(expectedInit.Object);
+
+            var extractor = new MSTestExtractor(assembly.Object, searcher.Object);
+
+            var actualCleanup = extractor.GetTestInitialize(testMethod.Object);
+
+            Assert.AreEqual(expectedInit.Object, actualCleanup);
+        }
     }
 }
