@@ -51,11 +51,13 @@
     <Compile Include="DistributedRunner.cs" />
     <Compile Include="IAssembly.cs" />
     <Compile Include="IAssemblyResolver.cs" />
+    <Compile Include="IAssemblySearcher.cs" />
     <Compile Include="IMethodInfo.cs" />
     <Compile Include="IProxy.cs" />
     <Compile Include="ITestMethodExtractor.cs" />
     <Compile Include="ITestRunner.cs" />
     <Compile Include="IType.cs" />
+    <Compile Include="MSTestExtractor.cs" />
     <Compile Include="MsTestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyStub.cs" />

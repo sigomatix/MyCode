@@ -9,5 +9,6 @@ namespace PMSTest
     {
         IMethodInfo FindMethod(IAssembly assembly, Type attribute);
         IMethodInfo FindMethod(IType type, Type attribute);
+        IList<IMethodInfo> FindMethods(IAssembly assembly, Type type);
     }
 }

@@ -18,7 +18,7 @@ namespace PMSTest
         }
         public IList<IMethodInfo> GetTestMethods()
         {
-            throw new NotImplementedException();
+            return assemblySearcher.FindMethods(assembly, typeof(TestMethodAttribute));
         }
 
         public IMethodInfo GetAssemblyInitialise()
@@ -33,12 +33,12 @@ namespace PMSTest
 
         public IMethodInfo GetTestInitialize(IMethodInfo methodInfo)
         {
-            throw new NotImplementedException();
+            return assemblySearcher.FindMethod(methodInfo.DeclaringType, typeof(TestInitializeAttribute));
         }
 
         public IMethodInfo GetTestCleanup(IMethodInfo methodInfo)
         {
-            throw new NotImplementedException();
+            return assemblySearcher.FindMethod(methodInfo.DeclaringType, typeof(TestCleanupAttribute));
         }
     }
 }
