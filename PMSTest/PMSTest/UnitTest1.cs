@@ -18,11 +18,49 @@ using System.Linq.Expressions;
 
 namespace PMSTest
 {
+
+    public class DataBuilder
+    {
+        public static Mock<IType> Type(string name)
+        {
+            return null;
+        }
+
+        public static Mock<IAssembly> Assembly()
+        {
+            return null;
+        }
+
+        public static Mock<IMethodInfo> Method(string name)
+        {
+            return null;
+        }
+    }
+
+    public static class DataBuilderExtensions
+    {
+
+        public static Mock<IAssembly> With(this Mock<IAssembly> assembly, Mock<IType> type)
+        {
+            return null;
+        }
+
+        public static Mock<IType> With(this Mock<IType> type, Mock<IMethodInfo> method)
+        {
+            return null;
+        }
+
+        public static Mock<IMethodInfo> With(this Mock<IMethodInfo> method, Type attribute)
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class UnitTest1
+    public class UnitTest1 : DataBuilder
     {
         [TestMethod]
         public void ItShouldDistributeTheTestMethodsTestsEquallyAmongstTheRunners()
@@ -319,63 +357,18 @@ namespace PMSTest
             Assert.AreEqual(testMethod2.Object, actualTestMethods[1]);
         }
 
-        private class BuildTypeContext
-        {
-            private Mock<IType> type;
-            private List<Mock<IMethodInfo>> methods;
-
-            public BuildTypeContext(string name)
-            {
-                type = new Mock<IType>();
-                methods = new List<Mock<IMethodInfo>>();
-                type.Setup(t => t.FullName).Returns(name);
-                type.Setup(t => t.GetMethods()).Returns(() => methods.Select(m => m.Object).ToArray());
-            }
-
-            public BuildTypeContext WithMethod(string methodName)
-            {
-                var method = new Mock<IMethodInfo>();
-                method.Setup(m => m.Name).Returns(methodName);
-                method.Setup(m => m.DeclaringType).Returns(type.Object);
-                methods.Add(method);
-                return this;
-            }
-
-            public BuildTypeContext WithAttribute(Type attribute)
-            {
-                var lastAddedMethod = methods.Last();
-                lastAddedMethod.Setup(m => m.GetCustomAttributes(attribute, true)).Returns(new[] { attribute });
-                return this;
-            }
-
-            public IType Build()
-            {
-                return type.Object;
-            }
-        }
-
-        private BuildTypeContext BuildType(string name)
-        {
-            return new BuildTypeContext(name);
-        }
-
         [TestMethod]
         public void AssemblySearcherShouldFindFirstMethodOfMatchingAttribute()
         {
-            var assembly = new Mock<IAssembly>();
             var searcher = new AssemblySearcher();
 
-            var type1 = BuildType("SomeClass")
-                .WithMethod("SomeMethod").WithAttribute(typeof(TestMethodAttribute))
-                .WithMethod("SomeOtherMethod").Build();
-
-            var type2 = BuildType("SomeOtherClass")
-               .WithMethod("SomeMethod2")
-               .WithMethod("SomeOtherMethod2").Build();
-
-            var allAssemblyTypes = new IType[] { type1, type2 };
-
-            assembly.Setup(a => a.GetTypes()).Returns(allAssemblyTypes);
+            var assembly = Assembly()
+                           .With(Type("SomeClass")
+                                 .With(Method("SomeMethod").With(typeof(TestMethodAttribute)))
+                                 .With(Method("SomeOtherMethod")))
+                           .With(Type("SomeOtherClass")
+                                 .With(Method("SomeMethod2"))
+                                 .With(Method("SomeOtherMethod2")));
 
             var actualMethod = searcher.FindMethod(assembly.Object, typeof(TestMethodAttribute));
 
