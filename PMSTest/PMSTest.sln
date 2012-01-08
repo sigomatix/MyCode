@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMSTest.Tests", "PMSTest\PMSTest.Tests.csproj", "{797C7A11-0BC6-4772-8DB6-1DECDE1A778A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMSTest.Tests", "PMSTest.Tests\PMSTest.Tests.csproj", "{797C7A11-0BC6-4772-8DB6-1DECDE1A778A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMSTest.Proxy", "PMSTest.Proxy\PMSTest.Proxy.csproj", "{286EDC9A-F226-487E-A592-6D16E09FE3C8}"
 EndProject
