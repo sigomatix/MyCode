@@ -1,0 +1,7 @@
+TestResults/*
+_Resharper.PMSTest/*
+PMSTest.crunchsolution.cache/*
+PMSTest.6.0.ReSharper.user
+*/bin/*
+*/obj/*
+
