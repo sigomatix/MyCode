@@ -1,0 +1,95 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUnit.Model.Tests", "DUnit.Model.Tests\DUnit.Model.Tests.csproj", "{2F138981-51FC-404D-BE2F-00FCC62AF0E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{883B24E9-3FB9-45FD-A19C-035E7820DD76}"
+	ProjectSection(SolutionItems) = preProject
+		DUnit.Model.Tests.vsmdi = DUnit.Model.Tests.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneTestMethodOnly", "OneTestMethodOnly\OneTestMethodOnly.csproj", "{28845DFD-BB74-4855-81E6-B234B8A68D51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MsTestProjectsFixtures", "MsTestProjectsFixtures", "{E2E1F0C5-0969-4467-9893-83A60D0A259F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwoTestMethodsInSameTestClass", "TwoTestMethodsInSameTestClass\TwoTestMethodsInSameTestClass.csproj", "{02FC502E-2B83-441F-A38E-36D268534B3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwoTestClassesWithOneTestMethodInEach", "TwoTestClassesWithOneTestMethodInEach\TwoTestClassesWithOneTestMethodInEach.csproj", "{A665574D-9B3B-4F9F-9EA6-6DBB1E523059}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInitTestCleanup", "TestInitTestCleanup\TestInitTestCleanup.csproj", "{E9527352-FE74-4D04-A656-79160F73402F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "Proxy\Proxy.csproj", "{92EF3334-A7E4-4F14-BA31-256EE862484D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssemblyInitAssemblyCleanup", "AssemblyInitAssemblyCleanup\AssemblyInitAssemblyCleanup.csproj", "{8D025AE3-C82B-48C9-970D-7AA52D535A56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneFailingTestMethod", "OneFailingTestMethod\OneFailingTestMethod.csproj", "{B4424499-1FFB-4429-BAD8-C9E1ECE6E138}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUnit", "DUnit\DUnit.csproj", "{E2180004-56AD-40BE-B44B-E590202A8B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DUnit.Infrastructure", "DUnit.Infrastructure\DUnit.Infrastructure.csproj", "{B7997972-D9CF-4553-A488-71F94E968D76}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = DUnit.Model.Tests.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F138981-51FC-404D-BE2F-00FCC62AF0E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F138981-51FC-404D-BE2F-00FCC62AF0E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F138981-51FC-404D-BE2F-00FCC62AF0E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F138981-51FC-404D-BE2F-00FCC62AF0E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28845DFD-BB74-4855-81E6-B234B8A68D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28845DFD-BB74-4855-81E6-B234B8A68D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28845DFD-BB74-4855-81E6-B234B8A68D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28845DFD-BB74-4855-81E6-B234B8A68D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02FC502E-2B83-441F-A38E-36D268534B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02FC502E-2B83-441F-A38E-36D268534B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02FC502E-2B83-441F-A38E-36D268534B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02FC502E-2B83-441F-A38E-36D268534B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A665574D-9B3B-4F9F-9EA6-6DBB1E523059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A665574D-9B3B-4F9F-9EA6-6DBB1E523059}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A665574D-9B3B-4F9F-9EA6-6DBB1E523059}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A665574D-9B3B-4F9F-9EA6-6DBB1E523059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9527352-FE74-4D04-A656-79160F73402F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9527352-FE74-4D04-A656-79160F73402F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9527352-FE74-4D04-A656-79160F73402F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9527352-FE74-4D04-A656-79160F73402F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92EF3334-A7E4-4F14-BA31-256EE862484D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92EF3334-A7E4-4F14-BA31-256EE862484D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92EF3334-A7E4-4F14-BA31-256EE862484D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92EF3334-A7E4-4F14-BA31-256EE862484D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D025AE3-C82B-48C9-970D-7AA52D535A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D025AE3-C82B-48C9-970D-7AA52D535A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D025AE3-C82B-48C9-970D-7AA52D535A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D025AE3-C82B-48C9-970D-7AA52D535A56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4424499-1FFB-4429-BAD8-C9E1ECE6E138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4424499-1FFB-4429-BAD8-C9E1ECE6E138}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4424499-1FFB-4429-BAD8-C9E1ECE6E138}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4424499-1FFB-4429-BAD8-C9E1ECE6E138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2180004-56AD-40BE-B44B-E590202A8B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2180004-56AD-40BE-B44B-E590202A8B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2180004-56AD-40BE-B44B-E590202A8B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2180004-56AD-40BE-B44B-E590202A8B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7997972-D9CF-4553-A488-71F94E968D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7997972-D9CF-4553-A488-71F94E968D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7997972-D9CF-4553-A488-71F94E968D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7997972-D9CF-4553-A488-71F94E968D76}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E2E1F0C5-0969-4467-9893-83A60D0A259F} = {883B24E9-3FB9-45FD-A19C-035E7820DD76}
+		{28845DFD-BB74-4855-81E6-B234B8A68D51} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+		{02FC502E-2B83-441F-A38E-36D268534B3A} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+		{A665574D-9B3B-4F9F-9EA6-6DBB1E523059} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+		{E9527352-FE74-4D04-A656-79160F73402F} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+		{8D025AE3-C82B-48C9-970D-7AA52D535A56} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+		{B4424499-1FFB-4429-BAD8-C9E1ECE6E138} = {E2E1F0C5-0969-4467-9893-83A60D0A259F}
+	EndGlobalSection
+EndGlobal
